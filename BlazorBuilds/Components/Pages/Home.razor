@@ -1,0 +1,104 @@
+﻿@page "/"
+
+<PageTitle>Home</PageTitle>
+
+<h1>Hello, <span style="text-decoration:line-through">world!</span> Accordion Component</h1>
+
+<p class="mb-4">Welcome to your new app.</p>
+
+<p class="mt-4 mt-4">
+    <button class="btn-primary" @onclick="ExpandAll">Expanded All</button>
+    <button class="btn-primary" @onclick="CollapseAll">Collapse All</button>
+    <button class="btn-primary" @onclick="ExpandSecondPanel">Expand & Focus Second Panel</button>
+    <button class="btn-primary" @onclick="() => _expandMode = _expandMode == ExpandMode.Single ? ExpandMode.Multiple : ExpandMode.Single">Toggle Expand Mode (Currently: @_expandMode.ToString())</button>
+
+</p>
+
+<Accordion @ref="AccordionRef" HeadingSize="HeadingLevelValue.h3" ExpandMode="_expandMode" OnAccordionItemHeadingClicked="HandleAccordionItemHeadingClicked">
+    <AccordionItems>
+
+        <AccordionItem IconCssClass="accessibility-icon" HeadingText="ARIA Authoring Practices Guide (APG)">
+            <PanelContent>
+                <p>
+                    An accordion is a vertically stacked set of interactive headings that each contain a title, content snippet, or thumbnail representing a section of content.
+                    The headings function as controls that enable users to reveal or hide their associated sections of content. Accordions are commonly used to reduce the need to
+                    scroll when presenting multiple sections of content on a single page.
+                </p>
+                <a href="https://www.w3.org/WAI/ARIA/apg/patterns/accordion" target="_blank">View the accordion pattern (opens in new window)</a>
+            </PanelContent>
+        </AccordionItem>
+
+        <AccordionItem IconCssClass="keyboard-icon" HeadingText="Keyboard Support">
+            <PanelContent>
+                <ul style="display:flex; flex-direction:column; gap: 1rem;">
+                    <li><kbd>Enter</kbd> Expands / collapses the heading that has the focus.</li>
+                    <li><kbd>Space</kbd> Same as enter.</li>
+                    <li><kbd>Down Arrow</kbd> Moves heading focus down to the next accordion heading, cycles back to the first heading after the end.</li>
+                    <li><kbd>Up Arrow</kbd> Moves heading focus up to the next accordion heading, cycles back to the last heading after the first</li>
+                    <li><kbd>Home</kbd> Moves heading focus to the first accordion heading</li>
+                    <li><kbd>End</kbd> Moves focus to the last accordion heading.</li>
+                    <li><kbd>Shift + Tab</kbd> Moves to the previous item in the page tab order including expanded panel content.</li>
+                    <li><kbd>Tab</kbd> Moves focus to the next item item in the page tab order including expanded panel content.</li>
+                </ul>
+            </PanelContent>
+        </AccordionItem>
+
+        <AccordionItem IconCssClass="youtube-icon" HeadingText="Build Other Component" @bind-Expanded="@_expandedThree" MarkAsAriaRegion="false">
+            <PanelContent>
+                <p>View my other videos on building other accessible blazor components.</p>
+                <ul style="list-style:none; display:flex; flex-direction:column; gap:0.5rem;">
+                    <li><a href="https://youtu.be/YxIFUI-tKjg" target="_blank">Accessible Switch Component (opens in new window)</a></li>
+                    <li><a href="https://youtu.be/8nBl6PsnY_8" target="_blank">Accessible Multilevel DropDown Menu Component (opens in new window)</a></li>
+                    <li><a href="https://youtu.be/cziqkaTERNw" target="_blank">Accessible Tabs Component  (opens in new window)</a></li>
+                    <li><a href="https://youtu.be/xoHs4kQCbQU" target="_blank">Focus Traps With & Without JavaScript For Accessibility (opens in new window)</a></li>
+                    <li><a href="https://youtu.be/uMS9BmJ3E7U" target="_blank">Accessible Busy Indicator Component (opens in new window)</a></li>
+                    <li><a href="https://youtu.be/_hx7j4-Q798" target="_blank">Accessible Offline Indicator Component & Service (opens in new window)</a></li>
+                </ul>
+            </PanelContent>
+        </AccordionItem>
+
+    </AccordionItems>
+</Accordion>
+
+<p class="mt-4">
+    <ul>
+        @foreach (var message in _messages)
+        {
+            <li>@message</li>
+        }
+    </ul>
+</p>
+@code {
+
+    private Accordion? AccordionRef { get; set; }
+    private List<string> _messages = [];
+
+    private bool _expandedThree = false;
+
+    private ExpandMode _expandMode = ExpandMode.Multiple;
+
+    private async Task ExpandAll()
+    {
+        if (AccordionRef is not null) await AccordionRef!.ExpandAllPanels(false);
+        _messages.Clear();
+    }
+
+    private async Task CollapseAll()
+    {
+        if (AccordionRef is not null) await AccordionRef!.CollapseAllPanels(false);
+        _messages.Clear();
+    }
+
+    private async Task ExpandSecondPanel()
+    {
+        if (AccordionRef is not null) await AccordionRef.ExpandPanelWithFocus(1);
+        _messages.Clear();
+    }
+
+
+    private async Task HandleAccordionItemHeadingClicked(ItemHeadingClickedData itemData)
+    {
+        _messages.Add($"Item index: {itemData.ItemIndex} - Heading Text: {itemData.HeadingText} - Is Expanded: {itemData.IsExpanded}");
+        await Task.CompletedTask;
+    }
+}

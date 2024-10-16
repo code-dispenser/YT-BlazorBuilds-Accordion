@@ -1,0 +1,91 @@
+﻿.accordion {
+    border: 1px solid var(--divider-clr);
+    border-radius: 0.25rem;
+
+    & > h1, h2, h3, h4, h5, h6 {
+        margin: 0;
+        padding: 0;
+    }
+
+    &__heading {
+        border-bottom: 1px solid var(--divider-clr);
+    }
+
+    &__heading-icon {
+        height: 1.5rem;
+        width: 1.5rem;
+    }
+
+    &__heading-text {
+    }
+
+    &__button {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 0;
+        padding: 0;
+        border: none;
+        background-color: transparent;
+        font-size: 1rem;
+        padding-inline: 1rem;
+        padding-block: 0.5rem;
+        cursor: pointer;
+
+        &:focus, &:hover {
+            box-shadow: 0 0 3px 1px var(--focus-clr);
+            border-radius: 0.25rem;
+            outline: none;
+
+            .accordion__button-icon {
+                box-shadow: var(--box-shadow-1);
+                color: var(--focus-clr);
+            }
+        }
+
+        &[aria-expanded="true"] {
+            background-color: var(--focus-bg_clr);
+            font-weight: bold;
+        }
+    }
+
+    &__button-content {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    &__button-icon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        height: 2rem;
+        width: 2rem;
+
+        & > span {
+            width: 1.5rem;
+            height: 1.5rem;
+            transition: transform 200ms ease;
+        }
+    }
+
+    &__button[aria-expanded="true"] > &__button-icon > span {
+        transform: rotate(180deg);
+    }
+
+    &__panel {
+        display: none;
+        padding: 1rem;
+        border-bottom: 1px solid var(--divider-clr);
+
+        &:last-of-type {
+            border-bottom: none;
+        }
+    }
+
+    &__panel--expanded {
+        display: block;
+    }
+}

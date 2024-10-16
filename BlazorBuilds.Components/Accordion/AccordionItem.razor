@@ -1,0 +1,104 @@
+﻿@implements IDisposable
+
+<Heading HeadingSize="@ParentControl!.HeadingSize" HeadingCssClass="@GetStyleInfo(StyleFor.AccordionHeading)">
+
+    <button @ref="AccordionButtonRef" id="@ButtonID" class="@GetStyleInfo(StyleFor.AccordionButton)" type="button" aria-expanded="@IsExpanded.ToString().ToLower()"
+            aria-controls="@PanelID" aria-label="@HeadingText" @onclick="() => RaiseHeadingClicked()" @onfocusin="HandleHeaderFocus">
+
+        <span class="@GetStyleInfo(StyleFor.AccordionButtonContent)">
+            @if (false == String.IsNullOrWhiteSpace(IconCssClass))
+            {
+                <span class="@GetStyleInfo(StyleFor.AccordionHeadingIcon)"></span>
+            }
+            <span class="@GetStyleInfo(StyleFor.AccordionHeadingText)">@HeadingText</span>
+        </span>
+
+        <span class="@GetStyleInfo(StyleFor.AccordionButtonIcon, IsExpanded)">
+            <span class="@GetStyleInfo(StyleFor.ChevronIcon)"></span>
+        </span>
+
+    </button>
+</Heading>
+
+<div id="@PanelID" class="@GetStyleInfo(StyleFor.AccordionPanel,IsExpanded)" aria-labelledby="@ButtonID" role="@(MarkAsAriaRegion ? "region" : null)">
+    @PanelContent
+</div>
+
+@code {
+    [CascadingParameter]        public Accordion?       ParentControl    { get; set; } = default;
+    [Parameter]                 public RenderFragment?  PanelContent     { get; set; } = default;
+    [Parameter, EditorRequired] public string           HeadingText      { get; set; } = default!;
+    [Parameter]                 public string           IconCssClass     { get; set; } = String.Empty;
+    [Parameter]                 public bool             Expanded         { get; set; } = false;
+    [Parameter]                 public bool             MarkAsAriaRegion { get; set; } = true;
+
+    [Parameter] public EventCallback<bool> ExpandedChanged { get; set; }
+
+    private ElementReference AccordionButtonRef { get; set; }
+
+    internal Guid  AccordionItemID { get; private set; } = Guid.NewGuid();
+    internal bool  IsExpanded      { get; private set; }
+
+    private string ButtonID        { get; } = $"accordion-button-{Guid.NewGuid()}";
+    private string PanelID         { get; } = $"accordion-panel-{Guid.NewGuid()}";
+
+    
+    protected override void OnInitialized()
+
+        => ParentControl?.AddAccordionItem(this);
+
+    internal async ValueTask SetFocus()
+
+        => await AccordionButtonRef.FocusAsync();
+
+    internal async Task ToggleExpandedState()
+
+        => await RaiseExpandedChanged(!Expanded);
+
+    private async Task RaiseExpandedChanged(bool expanded)
+    {
+        if (IsExpanded == expanded) return;
+
+        IsExpanded = Expanded = expanded;
+
+        await (ExpandedChanged.HasDelegate).WhenTrue(() => ExpandedChanged.InvokeAsync(Expanded));
+    }
+    
+    protected override async Task OnParametersSetAsync()
+    {
+        if (true == String.IsNullOrWhiteSpace(HeadingText)) throw new ArgumentNullException(nameof(HeadingText), GlobalStrings.Heading_Text_Exception_Message);
+        await RaiseExpandedChanged(Expanded);
+    }
+
+    private string GetStyleInfo(StyleFor styleFor, bool isExpanded = false)
+
+        => styleFor switch
+        {
+            StyleFor.Accordion               => GlobalStrings.Accordion_Class,
+            StyleFor.AccordionHeadingIcon => $"{GlobalStrings.Accordion_Heading_Icon_Class}{(String.IsNullOrWhiteSpace(IconCssClass) ? "" : " " + IconCssClass)}",
+            StyleFor.AccordionHeading        => GlobalStrings.Accordion_Heading_Class,
+            StyleFor.AccordionHeadingText    => GlobalStrings.Accordion_Heading_Text_Class,
+            StyleFor.AccordionButton         => GlobalStrings.Accordion_Button_Class,
+            StyleFor.AccordionButtonContent  => GlobalStrings.Accordion_Button_Content_Class,
+            StyleFor.AccordionButtonIcon     => $"{GlobalStrings.Accordion_Button_Icon_Class}",
+            StyleFor.AccordionPanel          => $"{GlobalStrings.Accordion_Panel_Class}{(isExpanded ? " " + GlobalStrings.Accordion_Panel_Expanded_Class : "")}",
+            StyleFor.ChevronIcon             => GlobalStrings.Chevron_Down_Icon_Class,
+            _ => String.Empty
+        };
+
+    private async Task RaiseHeadingClicked()
+    {
+       await ParentControl!.NotifyHeadingClicked(AccordionItemID);
+    }
+
+    private void HandleHeaderFocus()
+    {
+        ParentControl?.UpdateFocusIndex(AccordionItemID);
+    }
+
+    public void Dispose()
+    
+        => ParentControl?.RemoveAccordionItem(this);
+
+
+}

@@ -1,0 +1,21 @@
+﻿
+@switch(HeadingSize)
+{
+    case HeadingLevelValue.h1: <h1 class="@CheckGetClassName(HeadingCssClass)">@ChildContent</h1> break;
+    case HeadingLevelValue.h2: <h2 class="@CheckGetClassName(HeadingCssClass)">@ChildContent</h2> break;
+    case HeadingLevelValue.h3: <h3 class="@CheckGetClassName(HeadingCssClass)">@ChildContent</h3> break;
+    case HeadingLevelValue.h4: <h4 class="@CheckGetClassName(HeadingCssClass)">@ChildContent</h4> break;
+    case HeadingLevelValue.h5: <h5 class="@CheckGetClassName(HeadingCssClass)">@ChildContent</h5> break;
+    case HeadingLevelValue.h6: <h6 class="@CheckGetClassName(HeadingCssClass)">@ChildContent</h6> break;
+}
+
+@code {
+
+    [Parameter] public RenderFragment?      ChildContent    { get; set; }
+    [Parameter] public HeadingLevelValue    HeadingSize     { get; set; } = HeadingLevelValue.h3;
+    [Parameter] public string               HeadingCssClass { get; set; } = String.Empty;
+
+    private string? CheckGetClassName(string className)
+    
+        => String.IsNullOrWhiteSpace(className) ? null : className;
+}
