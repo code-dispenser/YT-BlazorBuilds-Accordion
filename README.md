@@ -4,7 +4,7 @@
 
 This repository contains the solution from my YouTube video showing how to build an accessible accordion component following the ARIA authoring practice guidelines for the accordion pattern.
 
-YouTube video: Hopefully uploaded late afternoon, will update when I have the link.
+YouTube video: https://youtu.be/iR2QjqWBmRc
 
 Coffees welcomed : https://ko-fi.com/codedispenser
 
