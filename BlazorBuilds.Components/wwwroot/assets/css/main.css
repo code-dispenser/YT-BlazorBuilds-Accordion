@@ -69,7 +69,7 @@
   border: 1px solid var(--divider-clr);
   border-radius: 0.25rem;
 }
-.accordion > h1, .accordion h2, .accordion h3, .accordion h4, .accordion h5, .accordion h6 {
+.accordion > h1, .accordion > h2, .accordion > h3, .accordion > h4, .accordion > h5, .accordion > h6 {
   margin: 0;
   padding: 0;
 }
